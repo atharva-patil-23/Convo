@@ -6,10 +6,11 @@ const Sidebar = ({selectedUser , setSelectedUser}) => {
     const navigate = useNavigate()
   return (
     <>
-    <div className={`bg-[#8185B2]/10 h-full p-5 rounded-r-2xl overflow-y-scroll text-white ${selectedUser ? "max-md-hidden" : " "}`}>
+    <div className={`bg-[#8185B2]/10 h-full p-5 rounded-r-2xl overflow-y-scroll text-white ${selectedUser ? "max-md-hidden" : ""}`}>
         <div className='pb-5'>
             <div className='flex justify-between items-center'>
-                <span className='flex'><img src="./src/assets/chat.svg" alt="logo" className='max-w-5'/>     <p className='ml-2'>Convo</p></span>
+                <span className='flex'><img src="./src/assets/chat.svg" alt="logo" className='max-w-5'/>     
+                <p className='ml-2'>Convo</p></span>
                 
                 <div className='relative py-2 group'>
                     <img src="./src/assets/menu-icon.svg" alt="menu-icon" className='max-h-5 cursor-pointer'/>
@@ -32,7 +33,9 @@ const Sidebar = ({selectedUser , setSelectedUser}) => {
 
         <div className='flex flex-col'>
             {userDummyData.map((user,index)=>(
-                <div onClick={()=>{setSelectedUser(user)}} key={index} className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer mx-sm:text-sm ${selectedUser?._id === user._id && "bg-[#282142]/50"}`}>
+                <div onClick={() => {setSelectedUser(user)}} 
+                key={index} 
+                className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer mx-sm:text-sm ${selectedUser?._id === user._id && "bg-[#282142]/50"}`}>
                     <img src="./src/assets/avatar.svg" alt="" className='w-[35px] aspect-[1/1] rounded-full'/>
                     <div className='flex flex-col leading-5'>
                         <p>{user.fullName}</p>
