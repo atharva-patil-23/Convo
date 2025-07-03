@@ -23,6 +23,7 @@ const ChatContainer = ({selectedUser,setSelectedUser}) => {
             <img onClick={() => {setSelectedUser(null)}} src="./src/assets/" alt="" className='md:hidden max-w-7' />
             <img src="./src/assets/info.svg" alt="" className='max-md:hidden max-w-5'/>
         </div>
+
         {/* chat */}
         <div className='flex flex-col h-[calc(100%-120px)] overflow-y-scroll p-3 pb-6'>
             {messagesDummyData.map((msg, index) => (
@@ -38,9 +39,17 @@ const ChatContainer = ({selectedUser,setSelectedUser}) => {
                     </div>
                 </div>
             ))}
-            <div ref={scrollEnd}>
+            <div ref={scrollEnd}></div>
+        </div>
 
+        {/* reply section */}
+        <div className='absolute bottom-0 left-0 right-0 flex items-center gap-3 p-3'>
+            <div>
+                <input type="text" placeholder='Send a message' />
+                <input type="file" id="image" accept='image/png, image/jpg' hidden/>
+                <label htmlFor="image"><img src={assets.gallery_icon} alt="send a image" className='w-5 mr-2 cursor-pointer' /></label>
             </div>
+
         </div>
     </div>
   ) : (
