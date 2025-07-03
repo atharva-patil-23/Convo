@@ -1,7 +1,16 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import assets, { messagesDummyData } from '../assets/assets.js'
+import { formatMessageTime } from '../lib/utils.js'
 
 const ChatContainer = ({selectedUser,setSelectedUser}) => {
+
+    const scrollEnd = useRef()
+
+    useEffect(() => {
+        if(scrollEnd.current){
+            scrollEnd.current.scrollIntoView({behavior :"smooth"})
+        }
+    },[])
   return  selectedUser ? (
     <div className='h-full overflow-scroll relative backdrop-blur-lg'>
 
@@ -14,7 +23,7 @@ const ChatContainer = ({selectedUser,setSelectedUser}) => {
             <img onClick={() => {setSelectedUser(null)}} src="./src/assets/" alt="" className='md:hidden max-w-7' />
             <img src="./src/assets/info.svg" alt="" className='max-md:hidden max-w-5'/>
         </div>
-        //chat
+        {/* chat */}
         <div className='flex flex-col h-[calc(100%-120px)] overflow-y-scroll p-3 pb-6'>
             {messagesDummyData.map((msg, index) => (
                 <div key={index} className={`flex items-end gap-2 justify-end ${msg.senderId !== '680f50e4f10f3cd28382ecf9' && 'flex-row-reverse'}`}>
@@ -25,10 +34,13 @@ const ChatContainer = ({selectedUser,setSelectedUser}) => {
                     )}
                     <div className='text-center text-xs'>
                         <img src={msg.senderId === '680f50e4f10f3cd28382ecf9' ? assets.avatar_icon : assets.profile_martin} alt="" className='w-7 rounded-full'/>
-                        <p className='text-gray-500'>{msg.createdAt}</p>
+                        <p className='text-gray-500'>{formatMessageTime(msg.createdAt)}</p>
                     </div>
                 </div>
             ))}
+            <div ref={scrollEnd}>
+
+            </div>
         </div>
     </div>
   ) : (
