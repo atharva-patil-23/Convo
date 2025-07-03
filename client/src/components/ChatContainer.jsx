@@ -1,5 +1,5 @@
 import React from 'react'
-import { messagesDummyData } from '../assets/assets.js'
+import assets, { messagesDummyData } from '../assets/assets.js'
 
 const ChatContainer = ({selectedUser,setSelectedUser}) => {
   return  selectedUser ? (
@@ -14,11 +14,19 @@ const ChatContainer = ({selectedUser,setSelectedUser}) => {
             <img onClick={() => {setSelectedUser(null)}} src="./src/assets/" alt="" className='md:hidden max-w-7' />
             <img src="./src/assets/info.svg" alt="" className='max-md:hidden max-w-5'/>
         </div>
-
+        //chat
         <div className='flex flex-col h-[calc(100%-120px)] overflow-y-scroll p-3 pb-6'>
-            {messagesDummyData.map(() => (
-                <div key={index} className={`flex items-end gap-2 justify-end ${msg.senderId !== '680f50e4f10f3cd28382ecf9' && "flex-row-reverse"}`}>
-                    {msg}
+            {messagesDummyData.map((msg, index) => (
+                <div key={index} className={`flex items-end gap-2 justify-end ${msg.senderId !== '680f50e4f10f3cd28382ecf9' && 'flex-row-reverse'}`}>
+                    {msg.image ? (
+                        <img src={msg.image} className='max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8' />
+                    ) : (
+                        <p className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${msg.senderId === '680f50e4f10f3cd28382ecf9' ? 'rounded-br-none' : 'rounded-bl-none'}`}>{msg.text}</p>
+                    )}
+                    <div className='text-center text-xs'>
+                        <img src={msg.senderId === '680f50e4f10f3cd28382ecf9' ? assets.avatar_icon : assets.profile_martin} alt="" className='w-7 rounded-full'/>
+                        <p className='text-gray-500'>{msg.createdAt}</p>
+                    </div>
                 </div>
             ))}
         </div>
