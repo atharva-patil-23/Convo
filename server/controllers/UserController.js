@@ -82,3 +82,12 @@ export const login = async (req,res) => {
 }
 
 
+// is user auth
+
+
+export const checkAuth = (req,res) => {
+    res.json({
+        success:true,
+        user:req.user
+    })
+}
