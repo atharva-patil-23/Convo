@@ -14,6 +14,8 @@ export const io = new Server({
     cors :{origin:"*"}
 })
 
+export const userSocketMap = {}
+
 io.on("connection", (socket) =>{
     const userId = socket.handshake.query.userId;
     console.log("User connected" , userId)
@@ -21,6 +23,12 @@ io.on("connection", (socket) =>{
     if(userId) userSocketMap[userId] = socket.id;
 
     io.emit("getOnlineUsers" , Object.keys(userSocketMap))
+
+    socket.on("disconnect", () => {
+        console.log("User disconnected" , userId);
+        delete userSocketMap[userId]
+        io.emit("getOnlineUsers", Object.keys(userSocketMap))
+    })
 })
 
 

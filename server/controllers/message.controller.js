@@ -1,6 +1,7 @@
 import Message from "../models/message.model.js"
 import User from "../models/UserModel.js"
 import cloudinary from "../lib/cloudinary.js"
+import { io, userSocketMap } from "../server.js"
 
 export const getUserforSidebar = async (req,res) => {
     try {
@@ -96,6 +97,11 @@ export const sendMessage = async (req,res) => {
             text,
             image:imageUrl
         })
+
+        const receiverSocketId = userSocketMap[receiverId]
+        if(receiverSocketId){
+            io.to(receiverSocketId).emit("newMessage", newMessage)
+        }
 
         res.json({
             success:true,
