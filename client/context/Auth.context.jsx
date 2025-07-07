@@ -59,10 +59,6 @@ export const AuthProvider = ({ children }) => {
         socket.disconnect()
     }
 
-
-
-
-
     const connectSocket = (userData) => {
         if(!userData || socket?.connected) return
     }
