@@ -8,11 +8,11 @@ export const getUserforSidebar = async (req,res) => {
         const userId = req.user._id
         const filteredUsers = await User.find({_id:{$ne:userId}}).select("-password")
 
-        const useenMessages = {}
+        const unseenMessages = {}
         const promises = filteredUsers.map(async (user) => {
             const messages = await Message.find({senderId:user._id, receiverId:userId , seen:false})
-            if(messages > 0) {
-                useenMessages[user._id] = messages.length
+            if(messages.length > 0) {
+                unseenMessages[user._id] = messages.length
             }
         })
 
@@ -20,7 +20,7 @@ export const getUserforSidebar = async (req,res) => {
         res.json({
             success:true,
             users:filteredUsers,
-            useenMessages
+            unseenMessages
         })
     } catch (error) {
        res.json({
@@ -80,7 +80,7 @@ export const sendMessage = async (req,res) => {
     try {
         
         const { text,image } = req.body;
-        const receiverId =req.params._id
+        const receiverId = req.params.id
         const senderId = req.user._id
 
 
