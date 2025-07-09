@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react'
 import {useNavigate} from 'react-router-dom'
-import assets from '../assets/assets.js';
 import { AuthContext } from '../../context/Auth.context.jsx';
  
 function ProfilePage() {
@@ -45,7 +44,7 @@ function ProfilePage() {
           <h3 className='text-lg'>Profile Details</h3>
           <label htmlFor="avatar" className='flex items-center gap-3 cursor-pointer'>
             <input onChange={(e) => setSelectedImage(e.target.files[0])} type="file" id="avatar" accept='.png, .jpg, .jpeg' hidden />
-            <img src={selectedImage ? URL.createObjectURL(selectedImage) : assets.avatar_icon}  alt="" className={`w-12 h-12 ${selectedImage && 'rounded-full'}`}/>
+            <img src={selectedImage ? URL.createObjectURL(selectedImage) : "/avatar.svg"}  alt="" className={`w-12 h-12 ${selectedImage && 'rounded-full'}`}/>
             upload Profile image
           </label>
           <input
@@ -58,7 +57,7 @@ function ProfilePage() {
         <button type='submit' className='bg-gradient-to-r from-purple-400 to-violet-600 text-white p-2 rounded-full text-lg cursor-pointer'>Save</button>
         </form>
 
-        <img className={`max-w-44 aspect-square mx-10 max-sm:mt-10 ${selectedImage && 'rounded-full'}`} src={authUser?.profilePic || assets.logo} alt="" />
+        <img className={`max-w-44 aspect-square mx-10 max-sm:mt-10 ${selectedImage && 'rounded-full'}`} src={authUser?.profilePic || "/chat.svg"} alt="" />
       </div>
     </div>
   )
