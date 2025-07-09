@@ -31,7 +31,7 @@ const Sidebar = () => {
         <div className='pb-5'>
             <div className='flex justify-between items-center'>
                 <span className='flex'>
-                    <img src="./src/assets/chat.svg" 
+                    <img src="/chat.svg" 
                     alt="logo" 
                     className='max-w-5'/>     
                 <p className='ml-2'>
@@ -40,7 +40,7 @@ const Sidebar = () => {
                 </span>
                 
                 <div className='relative py-2 group'>
-                    <img src="./src/assets/menu-icon.svg" 
+                    <img src="/menu-icon.svg" 
                     alt="menu-icon" 
                     className='max-h-5 cursor-pointer'/>
                         <div className='absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border border-gray-600 text-gray-100 hidden group-hover:block'>
@@ -60,7 +60,7 @@ const Sidebar = () => {
 
             <div className='bg-[#282142] rounded-full flex items-center gap-2 py-3 px-4 mt-5'>
 
-                <img src="./src/assets/search.svg" 
+                <img src="/search.svg" 
                 alt="search" />
                 <input onChange={(e) => setInput(e.target.value)} 
                 type="text" 
@@ -76,7 +76,7 @@ const Sidebar = () => {
                 key={index} 
                 className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer mx-sm:text-sm 
                 ${selectedUser?._id === user._id && "bg-[#282142]/50"}`}>
-                    <img src={user.profilePic || './src/assets/avatar.svg'} 
+                    <img src={user.profilePic || '/avatar.svg'} 
                     alt="avatar image" 
                     className='w-[35px] aspect-[1/1] rounded-full'/>
                     <div className='flex flex-col leading-5'>
