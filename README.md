@@ -1,4 +1,4 @@
-# 💬 Real-Time Chat App
+# 💬 Convo - a Real-Time Chat App
 
 A modern, responsive real-time chatting application built with the MERN stack and Socket.IO for seamless instant messaging.
 
