@@ -82,13 +82,35 @@ export const AuthProvider = ({ children }) => {
         const newSocket = io(backendUrl, {
             query:{
                 userId : userData._id,
-            }
+            },
+            transports: ['websocket', 'polling'],
+            upgrade: true,
+            rememberUpgrade: true,
+            pingTimeout: 60000,
+            pingInterval: 25000,
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 20000
         });
         newSocket.connect()
         setSocket(newSocket)
 
         newSocket.on("getOnlineUsers" ,(userIds) => {
                 setOnlineUsers(userIds)
+        })
+        
+        newSocket.on("connect", () => {
+            console.log("Socket connected")
+        })
+        
+        newSocket.on("disconnect", () => {
+            console.log("Socket disconnected")
+        })
+        
+        newSocket.on("connect_error", (error) => {
+            console.log("Socket connection error:", error)
         })
 
     }

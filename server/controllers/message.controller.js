@@ -99,8 +99,23 @@ export const sendMessage = async (req,res) => {
         })
 
         const receiverSocketId = userSocketMap[receiverId]
+        // Emit to receiver if online
         if(receiverSocketId){
-            io.to(receiverSocketId).emit("newMessage", newMessage)
+            try {
+                io.to(receiverSocketId).emit("newMessage", newMessage)
+            } catch (socketError) {
+                console.log("Socket emit error:", socketError.message)
+            }
+        }
+        
+        // Also emit to sender for immediate feedback
+        const senderSocketId = userSocketMap[senderId]
+        if(senderSocketId && senderSocketId !== receiverSocketId){
+            try {
+                io.to(senderSocketId).emit("newMessage", newMessage)
+            } catch (socketError) {
+                console.log("Socket emit error:", socketError.message)
+            }
         }
 
         res.json({

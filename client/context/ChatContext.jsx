@@ -76,10 +76,28 @@ export const ChatProvider = ({ children }) => {
         if(socket) socket.off("newMessage")
     }
 
+    // Subscribe to socket events only when socket changes
     useEffect(() => {
-        subscribeToMessages()
-        return () => unsubscribeFromMessages()
-    },[socket,selectedUser])
+        if(!socket) return
+        
+        const handleNewMessage = (newMessage) => {
+            if(selectedUser && newMessage.senderId === selectedUser._id){
+                newMessage.seen = true
+                setMessages((prevMessages) => [...prevMessages,newMessage])
+                axios.put(`/api/messages/mark/${newMessage._id}`);
+            }else{
+                setUnseenMessages((prevUnseenMessages) =>({
+                    ...prevUnseenMessages,[newMessage.senderId] : prevUnseenMessages[newMessage.senderId] ? prevUnseenMessages[newMessage.senderId] + 1 : 1
+                }))
+            }
+        }
+        
+        socket.on("newMessage", handleNewMessage)
+        
+        return () => {
+            socket.off("newMessage", handleNewMessage)
+        }
+    },[socket, selectedUser])
     
     const value = {
         messages,
