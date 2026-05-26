@@ -4,100 +4,133 @@ import { AuthContext } from '../../context/AuthContext.js'
 import { ChatContext } from '../../context/ChatContext.js'
 
 const Sidebar = () => {
+  const {
+    getUsers,
+    users,
+    selectedUser,
+    setSelectedUser,
+    unseenMessages,
+    setUnseenMessages,
+  } = useContext(ChatContext)
 
-    const {
-        getUsers,
-        users,
-        selectedUser,
-        setSelectedUser,
-        unseenMessages,
-        setUnseenMessages
-    } = useContext(ChatContext) 
+  const { logout, onlineUsers } = useContext(AuthContext)
 
-    const { logout , onlineUsers } = useContext(AuthContext)
+  const [query, setQuery] = useState("")
+  const [menuOpen, setMenuOpen] = useState(false)
+  const navigate = useNavigate()
 
-    const [input , setInput] = useState(false)
-    const navigate = useNavigate()
+  const filteredUsers = query
+    ? users.filter((u) => u.fullName?.toLowerCase().includes(query.toLowerCase()))
+    : users
 
-    const filteredUsers = input ? users.filter((user) =>user.fullName.toLowerCase().includes(input.toLowerCase()) ) : users
+  useEffect(() => {
+    getUsers()
+  }, [onlineUsers])
 
-    useEffect(() => {
-        getUsers();
-    },[onlineUsers])
   return (
-    <>
-    <div className={`bg-[#8185B2]/10 h-full p-5 rounded-r-2xl overflow-y-scroll text-white 
-        ${selectedUser ? "max-md-hidden" : ""}`}>
-        <div className='pb-5'>
-            <div className='flex justify-between items-center'>
-                <span className='flex'>
-                    <img src="/chat.svg" 
-                    alt="logo" 
-                    className='max-w-5'/>     
-                <p className='ml-2'>
-                    Convo
+    <aside
+      className={`bg-surface-1 border-r border-border h-full overflow-y-auto p-2 text-text ${
+        selectedUser ? 'max-md:hidden' : ''
+      }`}
+    >
+      {/* brand + menu */}
+      <div className='flex items-center justify-between px-2 py-3'>
+        <div className='flex items-center gap-2'>
+          <div className='w-[22px] h-[22px] rounded-md bg-accent grid place-items-center text-bg font-bold text-[13px]'>C</div>
+          <p className='text-sm font-semibold tracking-tight'>Convo</p>
+        </div>
+
+        <div className='relative'>
+          <button
+            type='button'
+            onClick={() => setMenuOpen((v) => !v)}
+            onBlur={() => setTimeout(() => setMenuOpen(false), 120)}
+            aria-label='Menu'
+            className='w-7 h-7 grid place-items-center rounded-md text-text-muted hover:text-text hover:bg-surface-2 transition-colors duration-micro ease-ease cursor-pointer'
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+          </button>
+          {menuOpen && (
+            <div className='absolute right-0 top-full mt-1 z-20 w-36 p-1 rounded-lg bg-surface-2 border border-border shadow-lg'>
+              <button
+                type='button'
+                onMouseDown={() => navigate("/profile")}
+                className='w-full text-left px-3 py-2 text-sm rounded-md text-text hover:bg-bg transition-colors duration-micro ease-ease'
+              >
+                Edit profile
+              </button>
+              <button
+                type='button'
+                onMouseDown={() => logout()}
+                className='w-full text-left px-3 py-2 text-sm rounded-md text-text hover:bg-bg transition-colors duration-micro ease-ease'
+              >
+                Log out
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* search */}
+      <div className='px-2 pb-2'>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder='Search'
+          aria-label='Search conversations'
+          className='w-full px-3 py-2 bg-bg border border-border rounded-lg text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-accent transition-colors duration-micro ease-ease'
+        />
+      </div>
+
+      {/* list */}
+      <div className='flex flex-col'>
+        {filteredUsers.map((user) => {
+          const isOnline = onlineUsers.includes(user._id)
+          const isActive = selectedUser?._id === user._id
+          const unread = unseenMessages?.[user._id] || 0
+          return (
+            <button
+              type='button'
+              onClick={() => {
+                setSelectedUser(user)
+                setUnseenMessages((prev) => ({ ...prev, [user._id]: 0 }))
+              }}
+              key={user._id}
+              aria-label={`Open conversation with ${user.fullName}`}
+              className={`relative flex items-center gap-2.5 px-2 py-2 rounded-lg text-left transition-colors duration-micro ease-ease ${
+                isActive ? 'bg-surface-2' : 'hover:bg-surface-2'
+              }`}
+            >
+              <div className='relative shrink-0'>
+                <img
+                  src={user.profilePic || '/avatar.svg'}
+                  alt=''
+                  className='w-8 h-8 rounded-full object-cover bg-surface-2'
+                />
+                {isOnline && (
+                  <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-accent ring-2 ${isActive ? 'ring-surface-2' : 'ring-surface-1'}`} />
+                )}
+              </div>
+              <div className='flex-1 min-w-0'>
+                <p className='text-sm font-medium text-text leading-tight truncate'>{user.fullName}</p>
+                <p className='text-[11px] mono text-text-faint mt-0.5 tracking-wide'>
+                  {isOnline ? 'Online' : 'Offline'}
                 </p>
+              </div>
+              {unread > 0 && (
+                <span className='shrink-0 min-w-[18px] h-[18px] px-1.5 rounded-full bg-accent text-bg text-[11px] font-semibold grid place-items-center mono'>
+                  {unread}
                 </span>
-                
-                <div className='relative py-2 group'>
-                    <img src="/menu-icon.svg" 
-                    alt="menu-icon" 
-                    className='max-h-5 cursor-pointer'/>
-                        <div className='absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border border-gray-600 text-gray-100 hidden group-hover:block'>
-                            <p 
-                            onClick={() => navigate("/profile")} className='cursor-pointer text-sm'>
-                                Edit profile
-                            </p>
-                            <hr className='my-2 border-t border-gray-500'/>
-                            <p onClick={() => logout()} 
-                            className='cursor-pointer text-sm'>
-                                Logout
-                            </p>
-                    </div>
-                </div>
-
-            </div>
-
-            <div className='bg-[#282142] rounded-full flex items-center gap-2 py-3 px-4 mt-5'>
-
-                <img src="/search.svg" 
-                alt="search" />
-                <input onChange={(e) => setInput(e.target.value)} 
-                type="text" 
-                className='bg-transparent border-none outline-none text-white text-xs placeholder:[#c8c8c8] flex-1' 
-                placeholder='Search User....'/>
-            </div>
-
-        </div>
-
-        <div className='flex flex-col'>
-            {filteredUsers.map((user,index)=>(
-                <div onClick={() => {setSelectedUser(user),setUnseenMessages(prev=> ({...prev,[user._id]:0}))}} 
-                key={index} 
-                className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer mx-sm:text-sm 
-                ${selectedUser?._id === user._id && "bg-[#282142]/50"}`}>
-                    <img src={user.profilePic || '/avatar.svg'} 
-                    alt="avatar image" 
-                    className='w-[35px] aspect-[1/1] rounded-full'/>
-                    <div className='flex flex-col leading-5'>
-                        <p>{user.fullName}</p>
-                        <span className='flex items-center gap-1'>
-                            {onlineUsers.includes(user._id) && <span className='w-2 h-2 rounded-full bg-green-500 inline-block'></span>}
-                            {onlineUsers.includes(user._id)
-                                ? <span className='text-green-400 text-xs'>Online</span>
-                                : <span className='text-neutral-400 text-xs'>Offline</span>
-                            }
-                        </span>
-                    </div>
-                    {unseenMessages[user._id]> 0 && 
-                    <p className='absolute top-4 right-4 text-xs h-5 w-5 flex justify-center items-center rounded-full bg-violet-500/50'>{unseenMessages[user._id]}
-                    </p>}
-                </div>
-            ) )}
-        </div>
-
-    </div>
-    </>
+              )}
+            </button>
+          )
+        })}
+        {filteredUsers.length === 0 && (
+          <p className='px-3 py-6 text-xs text-text-faint text-center'>No conversations.</p>
+        )}
+      </div>
+    </aside>
   )
 }
 

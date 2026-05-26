@@ -3,49 +3,70 @@ import { ChatContext } from '../../context/ChatContext.js'
 import { AuthContext } from '../../context/AuthContext.js'
 
 const RightSidebar = () => {
-
-  const {selectedUser , messages} = useContext(ChatContext)
-  const {logout , onlineUsers} = useContext(AuthContext)
-  const [msgImages , setMsgImages] = useState([])
+  const { selectedUser, messages } = useContext(ChatContext)
+  const { logout, onlineUsers } = useContext(AuthContext)
+  const [msgImages, setMsgImages] = useState([])
 
   useEffect(() => {
-    setMsgImages(
-      messages.filter(msg => msg.image).map(msg => msg.image )
-    )
-  },[messages])
+    setMsgImages(messages.filter((m) => m.image).map((m) => m.image))
+  }, [messages])
 
-  return selectedUser && (
-    <div className={`bg-[#8185B2]/10 text-white w-full relative overflow-y-scroll ${selectedUser ? "max-md:hidden" : ""}`}>
+  if (!selectedUser) return null
 
-      <div className='pt-16 flex flex-col items-center gap-2 text-xs font-light mx-auto'>
-        <img src={selectedUser ?.profilePic || "/avatar.svg"} alt="profile pic" className='w-20 aspect-[1/1] rounded-full'/>
-        <h1 className='px-10 text-xl font-medium mx-auto flex items-center gap-2'>
-          {onlineUsers.includes(selectedUser._id) && <p className='w-2 h-2 rounded-full bg-green-500'></p>}
-          {selectedUser.fullName}
-        </h1>
-        <p className='px-10 mb-auto'>
-          {selectedUser.bio}
+  const isOnline = onlineUsers.includes(selectedUser._id)
+
+  return (
+    <aside className='bg-surface-1 border-l border-border h-full overflow-y-auto p-6 flex flex-col max-md:hidden'>
+      <div className='flex flex-col items-center text-center'>
+        <img
+          src={selectedUser.profilePic || "/avatar.svg"}
+          alt='profile picture'
+          className='w-20 h-20 rounded-full object-cover bg-surface-2'
+        />
+        <p className='mt-3 text-base font-semibold tracking-tight text-text'>{selectedUser.fullName}</p>
+        <p className={`mt-0.5 text-xs ${isOnline ? 'text-accent' : 'text-text-faint'}`}>
+          {isOnline ? 'Online' : 'Offline'}
         </p>
+        {selectedUser.bio && (
+          <p className='mt-3 text-sm text-text-muted leading-relaxed'>{selectedUser.bio}</p>
+        )}
       </div>
 
-      <hr className='border-[#ffffff50] my-4'/>
-
-
-      <div className='px-5 text-xs'>
-        <p>Media</p>
-        <div className='mt-2 max-h-[200px] overflow-y-scroll grid grid-cols-2 gap-4 opacity-80'>
-          {msgImages.map((url,index) => (
-            <div key={index} onClick={() => window.open(url)} className='cursor-pointer rounded'>
-              <img src={url} alt="" className='h-full rounded-md' />
-            </div>
-          ))}
-        </div>
+      <div className='mt-7 pt-4 border-t border-border'>
+        <p className='mono text-[11px] uppercase tracking-wider text-text-faint mb-3'>
+          Media · {msgImages.length}
+        </p>
+        {msgImages.length === 0 ? (
+          <div className='grid grid-cols-3 gap-1'>
+            {[0, 1, 2].map((i) => (
+              <div key={i} className='aspect-square bg-surface-2 rounded-md' />
+            ))}
+          </div>
+        ) : (
+          <div className='grid grid-cols-3 gap-1 max-h-[220px] overflow-y-auto'>
+            {msgImages.map((url, index) => (
+              <button
+                type='button'
+                key={index}
+                onClick={() => window.open(url)}
+                aria-label='Open image'
+                className='aspect-square overflow-hidden rounded-md bg-surface-2 cursor-pointer'
+              >
+                <img src={url} alt='' className='w-full h-full object-cover' />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      <button onClick={() => logout()} className='absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-400 to-violet-600 text-white border-none text-sm font-light py-2 px-20 rounded-full cursor-pointer'>
-        Logout
+      <button
+        type='button'
+        onClick={() => logout()}
+        className='mt-auto self-stretch py-2.5 rounded-lg border border-border bg-transparent text-sm text-text-muted hover:bg-surface-2 hover:text-text transition-colors duration-micro ease-ease cursor-pointer'
+      >
+        Log out
       </button>
-    </div>
+    </aside>
   )
 }
 

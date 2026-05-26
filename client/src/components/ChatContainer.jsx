@@ -7,121 +7,149 @@ import { AuthContext } from '../../context/AuthContext.js'
 const MAX_MESSAGE_LENGTH = 4000
 
 const ChatContainer = () => {
-    const {messages,
-        selectedUser,
-        setSelectedUser,
-        sendMessage,
-        getMessages
-    } = useContext(ChatContext)
-    const {authUser,
-        onlineUsers
-    } = useContext(AuthContext)
-    
-    const scrollEnd = useRef()
+    const { messages, selectedUser, setSelectedUser, sendMessage, getMessages } = useContext(ChatContext)
+    const { authUser, onlineUsers } = useContext(AuthContext)
 
-    const [input ,setInput] = useState('')
+    const scrollEnd = useRef()
+    const [input, setInput] = useState('')
 
     const handelSendMessage = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         const trimmed = input.trim()
-        if(trimmed === "") return null
-        await sendMessage({text: trimmed})
+        if (trimmed === "") return null
+        await sendMessage({ text: trimmed })
         setInput("")
     }
 
     const handelSendImage = async (e) => {
-        const file = e.target.files[0];
-        if(!file || !file.type.startsWith("image/")){
+        const file = e.target.files[0]
+        if (!file || !file.type.startsWith("image/")) {
             toast.error("Please select an image file")
             e.target.value = ""
             return
         }
         const reader = new FileReader()
-
-        reader.onloadend = async() => {
-            await sendMessage({image:reader.result})
+        reader.onloadend = async () => {
+            await sendMessage({ image: reader.result })
             e.target.value = ""
         }
         reader.readAsDataURL(file)
     }
 
     useEffect(() => {
-        if(selectedUser){
+        if (selectedUser) {
             getMessages(selectedUser._id)
         }
-    },[selectedUser])
+    }, [selectedUser])
 
     useEffect(() => {
-        if(scrollEnd.current && messages){
-            scrollEnd.current.scrollIntoView({behavior :"smooth"})
+        if (scrollEnd.current && messages) {
+            scrollEnd.current.scrollIntoView({ behavior: "smooth" })
         }
-    },[messages])
-  return  selectedUser ? (
-    <div className='h-full overflow-scroll relative backdrop-blur-lg'>
+    }, [messages])
 
-        <div className='flex items-center gap-3 py-3 mx-4 border-b border-stone-500'>
-            <img src={selectedUser.profilePic || "/avatar.svg"} alt="profile picture" className='w-8 rounded-full' />
-            <p className='flex-1 text-lg text-white flex items-center gap-2'>
-                {selectedUser.fullName}
-                {onlineUsers.includes(selectedUser._id) && <span className='w-2 h-2 rounded-full bg-green-500'></span>}
-            </p>
-            <img onClick={() => setSelectedUser(null)} src="/arrow_icon.png" alt="" className='md:hidden max-w-7' />
-            <img src="/info.svg" alt="" className='max-md:hidden max-w-5'/>
-        </div>
+    const sendDisabled = input.trim() === ""
 
-        {/* chat */}
-        <div className='flex flex-col h-[calc(100%-120px)] overflow-y-scroll p-3 pb-6'>
-            {messages.map((msg, index) => (
-                <div key={index} className={`flex items-end gap-2 justify-end ${msg.senderId !== authUser._id && 'flex-row-reverse'}`}>
-                    {msg.image ? (
-                        <img src={msg.image} className='max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8' />
-                    ) : (
-                        <p className={`p-2 max-w-[min(60ch,75%)] md:text-sm font-light rounded-lg mb-8 whitespace-pre-wrap break-words bg-violet-500/30 text-white ${msg.senderId === authUser._id ? 'rounded-br-none' : 'rounded-bl-none'}`}>{msg.text}</p>
-                    )}
-                    <div className='text-center text-xs'>
-                        <img src={msg.senderId === authUser._id ? authUser?.profilePic || "/avatar.svg"  : selectedUser?.profilePic || "/avatar.svg"} alt="" className='w-7 rounded-full'/>
-                        <p className='text-gray-500'>{formatMessageTime(msg.createdAt)}</p>
-                    </div>
-                </div>
-            ))}
-            <div ref={scrollEnd}></div>
-        </div>
-
-        {/* reply section */}
-        <div className='absolute bottom-0 left-0 right-0 flex items-center gap-3 p-3'>
-            <div className='flex-1 flex items-center bg-gray-100/15 px-3 rounded-full'>
-                <input
-                    onChange={(e) => setInput(e.target.value)}
-                    value={input}
-                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) handelSendMessage(e) }}
-                    maxLength={MAX_MESSAGE_LENGTH}
-                    type="text"
-                    placeholder='Send a message'
-                    aria-label='Send a message'
-                    className='flex-1 text-sm p-3 border-none rounded-lg outline-none text-white bg-transparent placeholder-gray-400'
-                />
-                <input onChange={handelSendImage} type="file" id="image" accept='image/png, image/jpg, image/jpeg' hidden/>
-                <label htmlFor="image" aria-label='Attach image'>
-                    <img src="/gallery_icon.svg" alt="" className='w-5 mr-2 cursor-pointer' />
-                </label>
+    if (!selectedUser) {
+        return (
+            <div className='flex flex-col items-center justify-center gap-3 bg-bg max-md:hidden'>
+                <div className='w-12 h-12 rounded-2xl bg-accent grid place-items-center text-bg font-bold text-2xl'>C</div>
+                <p className='text-text-muted text-sm'>Pick a conversation to start.</p>
             </div>
-            <button
-                type='button'
-                onClick={handelSendMessage}
-                disabled={input.trim() === ""}
-                aria-label='Send message'
-                className={`bg-transparent border-none p-0 ${input.trim() === "" ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
-            >
-                <img src="/send_button.svg" alt="" className='w-7'/>
-            </button>
+        )
+    }
+
+    const isOnline = onlineUsers.includes(selectedUser._id)
+
+    return (
+        <div className='h-full relative bg-bg flex flex-col'>
+            <div className='flex items-center gap-3 px-5 py-3.5 border-b border-border'>
+                <div className='relative'>
+                    <img src={selectedUser.profilePic || "/avatar.svg"} alt="profile picture" className='w-8 h-8 rounded-full object-cover bg-surface-2' />
+                    {isOnline && <span className='absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-accent ring-2 ring-bg' />}
+                </div>
+                <div className='flex-1'>
+                    <p className='text-[15px] font-semibold text-text leading-tight'>{selectedUser.fullName}</p>
+                    <p className='text-xs mt-0.5'>
+                        <span className={isOnline ? 'text-accent' : 'text-text-faint'}>{isOnline ? 'Online' : 'Offline'}</span>
+                    </p>
+                </div>
+                <button
+                    onClick={() => setSelectedUser(null)}
+                    aria-label='Back'
+                    className='md:hidden w-8 h-8 grid place-items-center text-text-muted hover:text-text rounded-md transition-colors duration-micro ease-ease'
+                >
+                    ←
+                </button>
+            </div>
+
+            <div className='flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-2'>
+                {messages.map((msg, index) => {
+                    const isSelf = msg.senderId === authUser._id
+                    return (
+                        <div key={index} className={`flex flex-col max-w-bubble ${isSelf ? 'self-end items-end' : 'self-start items-start'}`}>
+                            {msg.image ? (
+                                <img src={msg.image} alt="" className='max-w-[230px] border border-border rounded-2xl overflow-hidden' />
+                            ) : (
+                                <p
+                                    className={`px-3.5 py-2.5 text-sm leading-snug whitespace-pre-wrap break-words rounded-2xl ${
+                                        isSelf
+                                            ? 'bg-bubble-self text-white rounded-br-[4px]'
+                                            : 'bg-bubble-other text-text rounded-bl-[4px]'
+                                    }`}
+                                >
+                                    {msg.text}
+                                </p>
+                            )}
+                            <span className='mono text-[11px] text-text-faint mt-1 tracking-wide'>
+                                {formatMessageTime(msg.createdAt)}
+                            </span>
+                        </div>
+                    )
+                })}
+                <div ref={scrollEnd}></div>
+            </div>
+
+            <div className='border-t border-border px-3 py-3 flex items-center gap-2'>
+                <div className='flex-1 flex items-center bg-surface-2 rounded-full pl-4 pr-1.5'>
+                    <input
+                        onChange={(e) => setInput(e.target.value)}
+                        value={input}
+                        onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) handelSendMessage(e) }}
+                        maxLength={MAX_MESSAGE_LENGTH}
+                        type="text"
+                        placeholder='Send a message'
+                        aria-label='Send a message'
+                        className='flex-1 text-sm py-2.5 bg-transparent border-none outline-none text-text placeholder:text-text-faint'
+                    />
+                    <input onChange={handelSendImage} type="file" id="image" accept='image/png, image/jpg, image/jpeg' hidden />
+                    <label
+                        htmlFor="image"
+                        aria-label='Attach image'
+                        className='w-8 h-8 grid place-items-center rounded-full text-text-muted hover:text-text hover:bg-bg cursor-pointer transition-colors duration-micro ease-ease'
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                        </svg>
+                    </label>
+                </div>
+                <button
+                    type='button'
+                    onClick={handelSendMessage}
+                    disabled={sendDisabled}
+                    aria-label='Send message'
+                    className={`w-9 h-9 grid place-items-center rounded-full bg-accent text-bg transition-[filter,opacity] duration-micro ease-ease ${
+                        sendDisabled ? 'opacity-40 cursor-not-allowed' : 'hover:brightness-110 cursor-pointer'
+                    }`}
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
+            </div>
         </div>
-    </div>
-  ) : (
-    <div className='flex flex-col items-center justify-center gap-2 text-gray-500 bg-white/10 max-md:hidden'>
-        <img  src="/chat.svg" alt="" className='max-w-16' />
-        <p className='text-lg font-medium text-white'>Chat anytime anywhere</p>
-    </div>
-  )
+    )
 }
 
 export default ChatContainer

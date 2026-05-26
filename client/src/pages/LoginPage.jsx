@@ -4,12 +4,12 @@ import { AuthContext } from '../../context/AuthContext.js'
 
 const LoginPage = () => {
 
-  const [currState,setCurrState] = useState('Sign up')
-  const [fullName,setFullName] = useState("")
-  const [bio,setBio] = useState("")
-  const [email,setEmail] = useState("")
-  const [password,setPassword] = useState("")
-  const [isDataSubmitted , setIsDataSubmitted] = useState(false)
+  const [currState, setCurrState] = useState('Sign up')
+  const [fullName, setFullName] = useState("")
+  const [bio, setBio] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isDataSubmitted, setIsDataSubmitted] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
 
   const { login } = useContext(AuthContext)
@@ -25,112 +25,162 @@ const LoginPage = () => {
       return
     }
 
-    if(isSignup && !isDataSubmitted){
+    if (isSignup && !isDataSubmitted) {
       setIsDataSubmitted(true)
-      return;
+      return
     }
 
-    login(isSignup ? "signup" : "login",
-      {
-        fullName,
-        email,
-        password,
-        bio
-      }
-    )
+    login(isSignup ? "signup" : "login", { fullName, email, password, bio })
   }
 
-  return (
-    <div className='min-h-screen bg-cover bg-center flex items-center justify-center gap-8 sm:justify-evenly max-sm:flex-col backdrop-blur-2xl relative'>
-      {/* left */}
-        <img src="/chat.svg" alt="" className='w-[min(30vw,250px)]'/>
+  const submitDisabled = isSignup && !agreedToTerms
 
-      {/* right */}
-      <form onSubmit={onSubmitHandler} className='border-2 bg-white/8 text-white border-gray-500 p-6 flex flex-col gap-6 rounded-lg shadow-lg'>
+  return (
+    <div className='min-h-screen bg-bg flex items-center justify-center p-6'>
+      <form
+        onSubmit={onSubmitHandler}
+        className='w-full max-w-sm flex flex-col gap-5'
+      >
+        <div className='flex items-center gap-2.5 mb-2'>
+          <div className='w-7 h-7 rounded-lg bg-accent grid place-items-center text-bg font-bold text-base'>C</div>
+          <div className='text-lg font-semibold tracking-tight text-text'>Convo</div>
+        </div>
+
         <div className='flex flex-col gap-1'>
-          <h2 className='font-medium text-2xl flex justify-between items-center'>
-            {currState}
-            {onStep2 && <img onClick={() => setIsDataSubmitted(false)} src="/arrow.svg" alt="Back to previous step"  className='w-5 cursor-pointer'/>}
+          <h2 className='text-2xl font-semibold tracking-tight text-text flex justify-between items-center'>
+            <span>{isSignup ? (onStep2 ? "Tell us about you" : "Create your account") : "Sign in"}</span>
+            {onStep2 && (
+              <button
+                type='button'
+                onClick={() => setIsDataSubmitted(false)}
+                aria-label='Back to previous step'
+                className='text-text-muted hover:text-text transition-colors duration-micro ease-ease cursor-pointer'
+              >
+                ←
+              </button>
+            )}
           </h2>
           {isSignup && (
-            <p className='text-xs text-gray-400'>Step {onStep2 ? 2 : 1} of 2</p>
+            <p className='text-xs text-text-faint font-mono tracking-wider uppercase'>Step {onStep2 ? 2 : 1} of 2</p>
           )}
         </div>
 
-        {isSignup && !isDataSubmitted &&(
-          <input onChange={(e) => setFullName(e.target.value)} value={fullName}
-          type="text" className='p-2 border bg-transparent border-gray-500 rounded-md focus:outline-none' placeholder='Full Name' aria-label='Full Name' required />
-
+        {isSignup && !isDataSubmitted && (
+          <div className='flex flex-col gap-1.5'>
+            <label className='text-xs text-text-muted font-medium' htmlFor='fullname'>Name</label>
+            <input
+              id='fullname'
+              onChange={(e) => setFullName(e.target.value)}
+              value={fullName}
+              type="text"
+              placeholder='Your name'
+              aria-label='Full Name'
+              required
+              className='px-3.5 py-2.5 bg-surface-1 border border-border rounded-lg text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-accent transition-colors duration-micro ease-ease'
+            />
+          </div>
         )}
 
-        {!isDataSubmitted &&(
+        {!isDataSubmitted && (
           <>
-          <input onChange={(e) => setEmail(e.target.value)} value={email}
-          type="email" className='p-2 bg-transparent border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500' placeholder='Enter your email address' aria-label='Email address' required />
-
-          <input onChange={(e) => setPassword(e.target.value)} value={password}
-          type="password" className='p-2 bg-transparent border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500' placeholder='Password' aria-label='Password' required />
+            <div className='flex flex-col gap-1.5'>
+              <label className='text-xs text-text-muted font-medium' htmlFor='email'>Email</label>
+              <input
+                id='email'
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                type="email"
+                placeholder='you@example.com'
+                aria-label='Email address'
+                required
+                className='px-3.5 py-2.5 bg-surface-1 border border-border rounded-lg text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-accent transition-colors duration-micro ease-ease'
+              />
+            </div>
+            <div className='flex flex-col gap-1.5'>
+              <label className='text-xs text-text-muted font-medium' htmlFor='password'>Password</label>
+              <input
+                id='password'
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                type="password"
+                placeholder='••••••••'
+                aria-label='Password'
+                required
+                className='px-3.5 py-2.5 bg-surface-1 border border-border rounded-lg text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-accent transition-colors duration-micro ease-ease'
+              />
+            </div>
           </>
-
         )}
 
         {onStep2 && (
-            <textarea onChange={(e) => setBio(e.target.value)} value={bio} rows={4}
-            className="p-2 border border-gray-500 bg-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder='Provide a short bio....' aria-label='Short bio' required></textarea>
-         )
-        }
+          <div className='flex flex-col gap-1.5'>
+            <label className='text-xs text-text-muted font-medium' htmlFor='bio'>Short bio</label>
+            <textarea
+              id='bio'
+              onChange={(e) => setBio(e.target.value)}
+              value={bio}
+              rows={4}
+              placeholder='A line or two about yourself'
+              aria-label='Short bio'
+              required
+              className='px-3.5 py-2.5 bg-surface-1 border border-border rounded-lg text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-accent transition-colors duration-micro ease-ease resize-none'
+            />
+          </div>
+        )}
 
         <button
           type='submit'
-          disabled={isSignup && !agreedToTerms}
-          className={`py-3 bg-gradient-to-r from-purple-400 to-violet-600 text-white rounded-md ${isSignup && !agreedToTerms ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          disabled={submitDisabled}
+          className={`py-3 rounded-lg text-sm font-semibold transition-[filter,opacity] duration-micro ease-ease ${
+            submitDisabled
+              ? 'bg-accent text-bg opacity-40 cursor-not-allowed'
+              : 'bg-accent text-bg hover:brightness-110 cursor-pointer'
+          }`}
         >
-          {isSignup ? (onStep2 ? "Create Account" : "Next") : "Login now"}
+          {isSignup ? (onStep2 ? "Create account" : "Continue") : "Sign in"}
         </button>
 
         {isSignup && (
-          <div className='flex items-center gap-2 text-sm text-gray-500'>
+          <div className='flex items-start gap-2 text-xs text-text-muted'>
             <input
               id='terms'
               type="checkbox"
               checked={agreedToTerms}
               onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className='mt-0.5 accent-accent cursor-pointer'
             />
-            <label htmlFor='terms'>Agree to the terms of use & privacy policy.</label>
+            <label htmlFor='terms' className='cursor-pointer leading-snug'>
+              Agree to the terms of use &amp; privacy policy.
+            </label>
           </div>
         )}
 
-        <div className='flex flex-col gap-2 items-center'>
-            {currState === 'Sign up' ? (
-              <p className='text-sm text-gray-600'>Already have an account ? 
-                <span 
-                  onClick={() => {setCurrState("Login"); 
-                  setIsDataSubmitted(false)}} 
-                  className='font-medium text-violet-500 cursor-pointer'>
-                  Login here
-                  </span>
-              </p>
-            ):(
-              <p 
-              className='text-sm text-gray-600'>
-                Create an account. 
-                <span  
-                  onClick={() => {setCurrState("Sign up")}} 
-                  className='font-medium text-violet-500 cursor-pointer'>
-                    Click here
-                </span>
-              </p>
-            )}
+        <div className='text-center text-sm text-text-muted pt-2'>
+          {isSignup ? (
+            <>
+              Have an account?{' '}
+              <button
+                type='button'
+                onClick={() => { setCurrState("Login"); setIsDataSubmitted(false) }}
+                className='text-accent font-medium hover:underline cursor-pointer'
+              >
+                Sign in
+              </button>
+            </>
+          ) : (
+            <>
+              No account?{' '}
+              <button
+                type='button'
+                onClick={() => setCurrState("Sign up")}
+                className='text-accent font-medium hover:underline cursor-pointer'
+              >
+                Sign up
+              </button>
+            </>
+          )}
         </div>
-
       </form>
-      {/* Bottom left logo */}
-      <img 
-        src="/logo-corner.png" 
-        alt="corner logo" 
-        className="fixed left-3 bottom-3 w-12 h-12 sm:w-16 sm:h-16 object-contain z-10 opacity-80 select-none pointer-events-none"
-        style={{maxWidth: '15vw', maxHeight: '15vw'}}
-      />
     </div>
   )
 }

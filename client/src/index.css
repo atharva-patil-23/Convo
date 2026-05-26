@@ -1,13 +1,77 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-*{
-    font-family: "Outfit", sans-serif;
+:root {
+  --bg:            #0F0F11;
+  --surface-1:     #1A1A1F;
+  --surface-2:     #26262E;
+  --border:        #2D2D38;
+
+  --text:          #F5F5F7;
+  --text-muted:    #8E8E97;
+  --text-faint:    #5C5C66;
+
+  --accent:        #00D26A;
+  --bubble-self:   #0066FF;
+  --bubble-other:  #1F1F26;
+  --danger:        #FF453A;
+
+  --ease:          cubic-bezier(0.2, 0, 0, 1);
+  --micro:         80ms;
+  --short:         150ms;
+  --medium:        300ms;
 }
 
-::-webkit-scrollbar{
-    display: none;
+[data-theme="light"] {
+  --bg:            #FAFAFA;
+  --surface-1:     #FFFFFF;
+  --surface-2:     #F0F0F2;
+  --border:        #E5E5EA;
+  --text:          #0F0F11;
+  --text-muted:    #5C5C66;
+  --text-faint:    #8E8E97;
+  --accent:        #00B45A;
+  --bubble-self:   #0066FF;
+  --bubble-other:  #F0F0F2;
+  --danger:        #E5453A;
+}
+
+html, body, #root {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Geist', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+}
+
+.mono {
+  font-family: 'Geist Mono', monospace;
+  font-feature-settings: "tnum";
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0ms !important;
+    transition-duration: 0ms !important;
+  }
 }
