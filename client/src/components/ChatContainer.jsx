@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 import { formatMessageTime } from '../lib/utils.js'
-import { ChatContext } from '../../context/ChatContext.jsx'
-import { AuthContext } from '../../context/Auth.context.jsx'
+import { ChatContext } from '../../context/ChatContext.js'
+import { AuthContext } from '../../context/AuthContext.js'
+
+const MAX_MESSAGE_LENGTH = 4000
 
 const ChatContainer = () => {
     const {messages,
@@ -20,15 +23,18 @@ const ChatContainer = () => {
 
     const handelSendMessage = async (e) => {
         e.preventDefault();
-        if(input.trim() === "") return null
-        await sendMessage({text:input.trim()})
+        const trimmed = input.trim()
+        if(trimmed === "") return null
+        await sendMessage({text: trimmed})
         setInput("")
     }
 
     const handelSendImage = async (e) => {
         const file = e.target.files[0];
         if(!file || !file.type.startsWith("image/")){
-            toast.error("select an image file")
+            toast.error("Please select an image file")
+            e.target.value = ""
+            return
         }
         const reader = new FileReader()
 
@@ -70,7 +76,7 @@ const ChatContainer = () => {
                     {msg.image ? (
                         <img src={msg.image} className='max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8' />
                     ) : (
-                        <p className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${msg.senderId === authUser._id ? 'rounded-br-none' : 'rounded-bl-none'}`}>{msg.text}</p>
+                        <p className={`p-2 max-w-[min(60ch,75%)] md:text-sm font-light rounded-lg mb-8 whitespace-pre-wrap break-words bg-violet-500/30 text-white ${msg.senderId === authUser._id ? 'rounded-br-none' : 'rounded-bl-none'}`}>{msg.text}</p>
                     )}
                     <div className='text-center text-xs'>
                         <img src={msg.senderId === authUser._id ? authUser?.profilePic || "/avatar.svg"  : selectedUser?.profilePic || "/avatar.svg"} alt="" className='w-7 rounded-full'/>
@@ -84,13 +90,30 @@ const ChatContainer = () => {
         {/* reply section */}
         <div className='absolute bottom-0 left-0 right-0 flex items-center gap-3 p-3'>
             <div className='flex-1 flex items-center bg-gray-100/15 px-3 rounded-full'>
-                <input onChange={(e) => setInput(e.target.value)} value={input} onKeyDown={() => e.key === "Enter" ? handelSendMessage(e) : null} type="text" placeholder='Send a message' className='flex-1 text-sm p-3 border-none rounded-lg outline-none text-white bg-transparent placeholder-gray-400'/>
+                <input
+                    onChange={(e) => setInput(e.target.value)}
+                    value={input}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) handelSendMessage(e) }}
+                    maxLength={MAX_MESSAGE_LENGTH}
+                    type="text"
+                    placeholder='Send a message'
+                    aria-label='Send a message'
+                    className='flex-1 text-sm p-3 border-none rounded-lg outline-none text-white bg-transparent placeholder-gray-400'
+                />
                 <input onChange={handelSendImage} type="file" id="image" accept='image/png, image/jpg, image/jpeg' hidden/>
-                <label htmlFor="image">
-                    <img src="/gallery_icon.svg" alt="send a image" className='w-5 mr-2 cursor-pointer' />
+                <label htmlFor="image" aria-label='Attach image'>
+                    <img src="/gallery_icon.svg" alt="" className='w-5 mr-2 cursor-pointer' />
                 </label>
             </div>
-            <img onClick={handelSendMessage} src="/send_button.svg" alt="send button" className='w-7 cursor-pointer'/>
+            <button
+                type='button'
+                onClick={handelSendMessage}
+                disabled={input.trim() === ""}
+                aria-label='Send message'
+                className={`bg-transparent border-none p-0 ${input.trim() === "" ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+            >
+                <img src="/send_button.svg" alt="" className='w-7'/>
+            </button>
         </div>
     </div>
   ) : (

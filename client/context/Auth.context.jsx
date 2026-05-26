@@ -1,24 +1,21 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios"
 import toast from "react-hot-toast";
 import {io} from "socket.io-client"
+import { AuthContext } from "./AuthContext.js"
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
 axios.defaults.baseURL = backendUrl
-
-export const AuthContext = createContext()
-
-
 
 export const AuthProvider = ({ children }) => {
     const [token,setToken] = useState(localStorage.getItem("token"))
     const [authUser , setAuthUser] = useState(null)
     const [onlineUsers , setOnlineUsers] = useState([])
     const [socket , setSocket] = useState(null)
+    const [isCheckingAuth, setIsCheckingAuth] = useState(Boolean(localStorage.getItem("token")))
 
     const checkAuth = async () => {
         try {
-            console.log("Headers", axios.defaults.headers.common)
             const {data} = await axios.get("/api/auth/check")
 
             if(data.success){
@@ -26,8 +23,13 @@ export const AuthProvider = ({ children }) => {
                 connectSocket(data.user)
             }
         } catch (error) {
-            console.log("error in checkauth", error.message)
-            toast.error(error.message)
+            if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
+                toast.error("Can't reach the server. Check your connection.")
+            } else if (error.response?.status !== 401) {
+                toast.error(error.response?.data?.message || error.message)
+            }
+        } finally {
+            setIsCheckingAuth(false)
         }
     }
 
@@ -45,7 +47,11 @@ export const AuthProvider = ({ children }) => {
                 toast.error(data.message)
             }
         } catch (error) {
-            toast.error(error.message)
+            if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
+                toast.error("Can't reach the server. Check your connection.")
+            } else {
+                toast.error(error.response?.data?.message || error.message)
+            }
         }
     }
 
@@ -127,6 +133,7 @@ export const AuthProvider = ({ children }) => {
         authUser,
         onlineUsers,
         socket,
+        isCheckingAuth,
         login,
         logout,
         updateProfile
