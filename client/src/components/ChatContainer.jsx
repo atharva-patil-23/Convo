@@ -83,11 +83,16 @@ const ChatContainer = () => {
                 </button>
             </div>
 
-            <div className='flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-2 justify-end'>
+            <div className='flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-0.5 justify-end'>
                 {messages.map((msg, index) => {
                     const isSelf = msg.senderId === authUser._id
+                    const next = messages[index + 1]
+                    const isLastInGroup = !next || next.senderId !== msg.senderId
                     return (
-                        <div key={index} className={`flex flex-col max-w-bubble ${isSelf ? 'self-end items-end' : 'self-start items-start'}`}>
+                        <div
+                            key={index}
+                            className={`flex flex-col max-w-bubble ${isSelf ? 'self-end items-end' : 'self-start items-start'} ${isLastInGroup ? 'mb-3 last:mb-0' : ''}`}
+                        >
                             {msg.image ? (
                                 <img src={msg.image} alt="" className='max-w-[230px] border border-border rounded-2xl overflow-hidden' />
                             ) : (
@@ -101,9 +106,11 @@ const ChatContainer = () => {
                                     {msg.text}
                                 </p>
                             )}
-                            <span className='mono text-[11px] text-text-faint mt-1 tracking-wide'>
-                                {formatMessageTime(msg.createdAt)}
-                            </span>
+                            {isLastInGroup && (
+                                <span className='mono text-[11px] text-text-faint mt-1 tracking-wide'>
+                                    {formatMessageTime(msg.createdAt)}
+                                </span>
+                            )}
                         </div>
                     )
                 })}
