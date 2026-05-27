@@ -47,7 +47,7 @@ const LoginPage = () => {
         </div>
 
         <div className='flex flex-col gap-1'>
-          <h2 className='text-2xl font-semibold tracking-tight text-text flex justify-between items-center'>
+          <h1 className='text-2xl font-semibold tracking-tight text-text flex justify-between items-center'>
             <span>{isSignup ? (onStep2 ? "Tell us about you" : "Create your account") : "Sign in"}</span>
             {onStep2 && (
               <button
@@ -59,7 +59,7 @@ const LoginPage = () => {
                 ←
               </button>
             )}
-          </h2>
+          </h1>
           {isSignup && (
             <p className='text-xs text-text-faint font-mono tracking-wider uppercase'>Step {onStep2 ? 2 : 1} of 2</p>
           )}

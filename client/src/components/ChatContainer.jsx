@@ -52,9 +52,9 @@ const ChatContainer = () => {
 
     if (!selectedUser) {
         return (
-            <div className='flex flex-col items-center justify-center gap-3 bg-bg max-md:hidden'>
-                <div className='w-12 h-12 rounded-2xl bg-accent grid place-items-center text-bg font-bold text-2xl'>C</div>
-                <p className='text-text-muted text-sm'>Pick a conversation to start.</p>
+            <div className='flex flex-col items-center justify-center gap-2 bg-bg max-md:hidden'>
+                <h1 className='text-text font-semibold text-base tracking-tight'>Pick a conversation</h1>
+                <p className='text-text-muted text-sm'>or use search to find someone new.</p>
             </div>
         )
     }
@@ -69,7 +69,7 @@ const ChatContainer = () => {
                     {isOnline && <span className='absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-accent ring-2 ring-bg' />}
                 </div>
                 <div className='flex-1'>
-                    <p className='text-[15px] font-semibold text-text leading-tight'>{selectedUser.fullName}</p>
+                    <h1 className='text-[15px] font-semibold text-text leading-tight'>{selectedUser.fullName}</h1>
                     <p className='text-xs mt-0.5'>
                         <span className={isOnline ? 'text-accent' : 'text-text-faint'}>{isOnline ? 'Online' : 'Offline'}</span>
                     </p>
