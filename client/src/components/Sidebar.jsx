@@ -46,7 +46,7 @@ const Sidebar = () => {
             onClick={() => setMenuOpen((v) => !v)}
             onBlur={() => setTimeout(() => setMenuOpen(false), 120)}
             aria-label='Menu'
-            className='w-7 h-7 grid place-items-center rounded-md text-text-muted hover:text-text hover:bg-surface-2 transition-colors duration-micro ease-ease cursor-pointer'
+            className='w-11 h-11 grid place-items-center rounded-md text-text-muted hover:text-text hover:bg-surface-2 transition-colors duration-micro ease-ease cursor-pointer'
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
           </button>
@@ -79,7 +79,7 @@ const Sidebar = () => {
           onChange={(e) => setQuery(e.target.value)}
           placeholder='Search'
           aria-label='Search conversations'
-          className='w-full px-3 py-2 bg-bg border border-border rounded-lg text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-accent transition-colors duration-micro ease-ease'
+          className='w-full px-3 py-3 bg-bg border border-border rounded-lg text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-accent transition-colors duration-micro ease-ease'
         />
       </div>
 
