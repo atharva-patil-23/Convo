@@ -62,7 +62,7 @@ const ChatContainer = () => {
     const isOnline = onlineUsers.includes(selectedUser._id)
 
     return (
-        <div className='h-full relative bg-bg flex flex-col'>
+        <div className='h-full relative bg-bg flex flex-col min-w-0'>
             <div className='flex items-center gap-3 px-5 py-3.5 border-b border-border'>
                 <div className='relative'>
                     <img src={selectedUser.profilePic || "/avatar.svg"} alt="profile picture" className='w-8 h-8 rounded-full object-cover bg-surface-2' />
@@ -83,7 +83,7 @@ const ChatContainer = () => {
                 </button>
             </div>
 
-            <div className='flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-0.5 justify-end'>
+            <div className='flex-1 min-w-0 overflow-y-auto px-5 py-4 flex flex-col gap-0.5 justify-end'>
                 {messages.map((msg, index) => {
                     const isSelf = msg.senderId === authUser._id
                     const next = messages[index + 1]
@@ -97,7 +97,7 @@ const ChatContainer = () => {
                                 <img src={msg.image} alt="" className='max-w-[230px] border border-border rounded-2xl overflow-hidden' />
                             ) : (
                                 <p
-                                    className={`px-3.5 py-2.5 text-sm leading-snug whitespace-pre-wrap break-words rounded-2xl ${
+                                    className={`max-w-full px-3.5 py-2.5 text-sm leading-snug whitespace-pre-wrap break-words rounded-2xl ${
                                         isSelf
                                             ? 'bg-bubble-self text-white rounded-br-[4px]'
                                             : 'bg-bubble-other text-text rounded-bl-[4px]'
