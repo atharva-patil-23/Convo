@@ -83,7 +83,7 @@ const ChatContainer = () => {
                 </button>
             </div>
 
-            <div className='flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-2'>
+            <div className='flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-2 justify-end'>
                 {messages.map((msg, index) => {
                     const isSelf = msg.senderId === authUser._id
                     return (
