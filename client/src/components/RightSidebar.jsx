@@ -37,11 +37,9 @@ const RightSidebar = () => {
           Media · {msgImages.length}
         </p>
         {msgImages.length === 0 ? (
-          <div className='grid grid-cols-3 gap-1'>
-            {[0, 1, 2].map((i) => (
-              <div key={i} className='aspect-square bg-surface-2 rounded-md' />
-            ))}
-          </div>
+          <p className='text-xs text-text-faint leading-relaxed'>
+            No shared media yet. Photos sent in this chat will appear here.
+          </p>
         ) : (
           <div className='grid grid-cols-3 gap-1 max-h-[220px] overflow-y-auto'>
             {msgImages.map((url, index) => (
